@@ -18,7 +18,7 @@ The bitmap utility tests use Robolectric to exercise Android APIs directly;
 they no longer mock the object under test. The worker regression injects a write
 failure and checks that it reaches the completion listener exactly once.
 
-Build with JDK 17; the published library still targets Java 11. JitPack publishes
-the `android-image-cropper` module by commit under
-`com.github.pauldemarco.Android-Image-Cropper`. Consumers should pin a full commit,
+Build with JDK 17; the published library still targets Java 11. Since only the
+library module publishes an artifact, JitPack exposes it by commit as
+`com.github.pauldemarco:Android-Image-Cropper`. Consumers should pin a full commit,
 and return to the upstream artifact once both error paths are fixed there.
