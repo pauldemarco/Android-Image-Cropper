@@ -1,14 +1,19 @@
 package com.canhub.cropper
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
-import io.mockk.mockkObject
-import io.mockk.unmockkObject
-import org.junit.After
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import java.io.IOException
+import java.io.OutputStream
 
 private const val RECT_WIDTH = 10f
 private const val RECT_HEIGHT = 13f
@@ -21,16 +26,24 @@ private const val RECT_CENTER_Y = 8.5f
 private val RECTANGLE_IMAGE_POINTS: FloatArray = floatArrayOf(RECT_LEFT, RECT_TOP, RECT_WIDTH, RECT_TOP, RECT_WIDTH, RECT_BOTTOM, RECT_LEFT, RECT_BOTTOM)
 private val LOW_RECT_POINTS: FloatArray = floatArrayOf(RECT_LEFT)
 
+@RunWith(RobolectricTestRunner::class)
 class BitmapUtilsTest {
 
-  @Before
-  fun setup() {
-    mockkObject(BitmapUtils)
-  }
+  @Test
+  fun `failed compression closes the output and reports an error`() {
+    val context = mockk<Context>()
+    val bitmap = mockk<Bitmap>()
+    val uri = mockk<Uri>()
+    val output = mockk<OutputStream>(relaxed = true)
+    every { uri.scheme } returns "content"
+    every { uri.path } returns "/crop.jpg"
+    every { context.contentResolver.openOutputStream(uri, "wt") } returns output
+    every { bitmap.compress(Bitmap.CompressFormat.JPEG, 90, output) } returns false
 
-  @After
-  fun teardown() {
-    unmockkObject(BitmapUtils)
+    assertThrows(IOException::class.java) {
+      BitmapUtils.writeBitmapToUri(context, bitmap, Bitmap.CompressFormat.JPEG, 90, uri)
+    }
+    verify(exactly = 1) { output.close() }
   }
 
   @Test

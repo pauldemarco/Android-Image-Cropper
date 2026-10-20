@@ -3,6 +3,7 @@ package com.canhub.cropper
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -92,7 +93,7 @@ internal class BitmapCroppingWorkerJob(
             options = options,
           )
 
-          launch(Dispatchers.IO) {
+          withContext(Dispatchers.IO) {
             val newUri = BitmapUtils.writeBitmapToUri(
               context = context,
               bitmap = resizedBitmap,
@@ -111,6 +112,8 @@ internal class BitmapCroppingWorkerJob(
             )
           }
         }
+      } catch (cancelled: CancellationException) {
+        throw cancelled
       } catch (throwable: Exception) {
         onPostExecute(
           Result(

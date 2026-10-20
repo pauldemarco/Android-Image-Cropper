@@ -45,6 +45,7 @@ out
 
 # Gradle folder
 .gradle/
+.kotlin/
 build/
 
 

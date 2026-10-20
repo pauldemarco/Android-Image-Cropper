@@ -14,7 +14,10 @@ licensee {
 
 kotlin {
   jvmToolchain {
-    languageVersion.set(JavaLanguageVersion.of(11))
+    languageVersion.set(JavaLanguageVersion.of(17))
+  }
+  compilerOptions {
+    jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
   }
 }
 
@@ -56,6 +59,7 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.mock)
   testImplementation(libs.robolectric)
+  testImplementation(libs.kotlinx.coroutines.test)
 }
 
 // Workaround https://github.com/cashapp/paparazzi/issues/1231

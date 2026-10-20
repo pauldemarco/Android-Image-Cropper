@@ -1,0 +1,4 @@
+jdk:
+  - openjdk17
+install:
+  - ./gradlew :cropper:publishToMavenLocal -PGROUP="$GROUP.$ARTIFACT" -PVERSION_NAME="$VERSION" -PRELEASE_SIGNING_ENABLED=false --max-workers=2

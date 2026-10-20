@@ -461,7 +461,7 @@ internal object BitmapUtils {
   /**
    * Write the given bitmap to the given uri using the given compression.
    */
-  @Throws(FileNotFoundException::class)
+  @Throws(IOException::class)
   fun writeBitmapToUri(
     context: Context,
     bitmap: Bitmap,
@@ -476,8 +476,12 @@ internal object BitmapUtils {
       validateOutputUri(customOutputUri, compressFormat)
     }
 
-    return context.contentResolver.openOutputStream(newUri, WRITE_AND_TRUNCATE)!!.use {
-      bitmap.compress(compressFormat, compressQuality, it)
+    val output = context.contentResolver.openOutputStream(newUri, WRITE_AND_TRUNCATE)
+      ?: throw IOException("Could not open crop output: $newUri")
+    return output.use {
+      if (!bitmap.compress(compressFormat, compressQuality, it)) {
+        throw IOException("Could not compress cropped image: $newUri")
+      }
       newUri
     }
   }
